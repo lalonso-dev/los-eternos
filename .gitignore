@@ -1,0 +1,63 @@
+# =========================
+# OS / System files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Node / Tooling (si luego agregas bundler)
+# =========================
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+.parcel-cache/
+
+# =========================
+# Env files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Temporary / Backup
+# =========================
+tmp/
+temp/
+*.bak
+*.old
+
+# =========================
+# Media exports (opcional)
+# =========================
+*.mp4.bak
+*.psd
+*.ai
+
+# =========================
+# Certificates / Keys
+# =========================
+*.pem
+*.key
+*.crt
+
