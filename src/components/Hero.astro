@@ -1,0 +1,87 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/logo.webp";
+import logoEternos from "../assets/images/los-eternos.webp";
+import heroPoster from "../assets/images/hero-poster.webp";
+---
+
+<section
+  id="top"
+  class="relative flex min-h-screen items-center justify-center overflow-hidden text-center"
+>
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    poster={heroPoster.src}
+    id="hero-video"
+    class="absolute left-1/2 top-1/2 h-auto min-h-full w-auto min-w-full -translate-x-1/2 -translate-y-1/2 object-cover"
+  >
+    <source src="/assets/video/bk-video.mp4" type="video/mp4" />
+  </video>
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-rojo-profundo/70 to-negro/85"
+  >
+  </div>
+
+  <div
+    class="relative z-10 flex w-full max-w-2xl flex-col items-center px-6 pb-24 pt-24"
+  >
+    <div
+      class="mb-7 h-24 w-24 overflow-hidden rounded-full border-[3px] border-dorado md:h-32 md:w-32"
+    >
+      <Image
+        src={logo}
+        alt="Logo Los Eternos"
+        width={128}
+        height={128}
+        class="h-full w-full object-cover"
+      />
+    </div>
+    <h1
+      class="bg-gradient-to-b from-[oklch(0.92_0.03_85)] to-[oklch(0.7_0.11_80)] bg-clip-text font-display text-5xl font-extrabold leading-none tracking-[4px] text-transparent md:text-7xl"
+    >
+      <Image
+        src={logoEternos}
+        alt="Los Eternos"
+        width={700}
+        class="max-w-full object-contain"
+      />
+    </h1>
+    <div class="my-6 h-0.5 w-16 bg-dorado"></div>
+    <div class="text-sm font-bold uppercase tracking-[3px] text-dorado">
+      De Morelia, Michoacán
+    </div>
+    <p
+      class="mx-auto mt-5 mb-9 max-w-md text-base leading-relaxed text-cream/85 md:text-lg"
+    >
+      Música auténtica, directo del corazón. Llevamos el sonido de nuestra
+      tierra a cada escenario.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a
+        href="#musica"
+        class="rounded bg-dorado px-8 py-4 text-sm font-bold tracking-wide text-negro transition hover:brightness-110"
+      >
+        Escuchar Música
+      </a>
+      <a
+        href="#contrataciones"
+        class="rounded border-[1.5px] border-cream/40 px-8 py-4 text-sm font-bold tracking-wide text-cream transition hover:border-dorado hover:text-dorado"
+      >
+        Contratar
+      </a>
+    </div>
+  </div>
+
+  <div
+    class="absolute bottom-9 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
+  >
+    <div class="text-[11px] uppercase tracking-[2px] text-cream/60">
+      Desliza
+    </div>
+    <div class="h-6 w-px animate-bounce bg-cream/60"></div>
+  </div>
+</section>

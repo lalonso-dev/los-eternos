@@ -1,0 +1,63 @@
+---
+import "../styles/global.css";
+import { getImage } from "astro:assets";
+import bioPhoto from "../assets/images/bio-photo.webp";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Los Eternos - Grupo Norteño",
+  description = "Los Eternos, grupo norteño de Morelia, Michoacán. Música auténtica directo del corazón para bodas, fiestas y eventos.",
+} = Astro.props;
+
+const ogImage = await getImage({ src: bioPhoto, width: 1200, height: 630, fit: "cover" });
+const ogImageUrl = new URL(ogImage.src, Astro.site);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Los Eternos" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Los Eternos" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-negro text-cream font-body overflow-x-hidden">
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,52 @@
+---
+const links = [
+  { href: "#bio", label: "Historia" },
+  { href: "#musica", label: "Música" },
+  { href: "#galeria", label: "Galería" },
+  { href: "#eventos", label: "Eventos" },
+];
+---
+<nav
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-50 flex flex-wrap items-center justify-between gap-3 px-6 py-7 transition-[background-color,padding,backdrop-filter] duration-300 md:px-20"
+>
+  <a href="#top" class="font-display text-lg font-extrabold tracking-[3px] text-cream md:text-xl">
+    LOS ETERNOS
+  </a>
+  <div class="flex flex-wrap items-center gap-4 md:gap-8">
+    {links.map((link) => (
+      <a
+        href={link.href}
+        class="text-[13px] font-semibold tracking-wide text-cream/90 hover:text-dorado transition-colors"
+      >
+        {link.label}
+      </a>
+    ))}
+    <a
+      href="#contrataciones"
+      class="text-[13px] font-bold tracking-wide text-dorado hover:text-dorado/80 transition-colors"
+    >
+      Contratar
+    </a>
+  </div>
+</nav>
+
+<style>
+  #site-nav.nav-scrolled {
+    background-color: oklch(0.14 0.02 30 / 0.9);
+    backdrop-filter: blur(8px);
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+</style>
+
+<script>
+  const nav = document.getElementById("site-nav");
+  if (nav) {
+    const onScroll = () => {
+      nav.classList.toggle("nav-scrolled", window.scrollY > 60);
+    };
+    document.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+</script>

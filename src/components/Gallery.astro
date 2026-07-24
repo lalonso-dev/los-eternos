@@ -1,0 +1,129 @@
+---
+import { getImage } from "astro:assets";
+import { facebookReels } from "../data/facebookReels";
+import FacebookReel from "./FacebookReel.astro";
+
+const photoModules = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/gallery-photos/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true }
+);
+
+const photos = await Promise.all(
+  Object.values(photoModules).map(async (mod, i) => {
+    const thumb = await getImage({ src: mod.default, width: 500, height: 500, fit: "cover" });
+    const full = await getImage({ src: mod.default, width: 1600 });
+    return { id: `photo-${i}`, alt: `Los Eternos - Foto ${i + 1}`, thumbSrc: thumb.src, fullSrc: full.src };
+  })
+);
+---
+
+<section id="galeria" class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24 md:px-20 md:py-36">
+  <div class="mb-14 text-center">
+    <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
+      Galería
+    </div>
+    <h2 class="mb-4 font-display text-4xl font-bold text-cream">Momentos en Vivo</h2>
+    <p class="text-muted">Instantes inolvidables junto a nuestro público</p>
+  </div>
+
+  <div class="mb-3 flex items-center justify-center gap-3">
+    <span class="rounded-full border border-dorado/40 px-6 py-2 text-sm font-bold tracking-wide text-dorado">
+      Fotos
+    </span>
+  </div>
+  <div class="mb-16 grid grid-cols-2 gap-4 md:grid-cols-4">
+    {photos.length > 0 ? (
+      photos.map((photo, i) => (
+        <button
+          type="button"
+          data-index={i}
+          class="gallery-trigger group relative aspect-square cursor-pointer overflow-hidden rounded-md"
+        >
+          <img
+            src={photo.thumbSrc}
+            alt={photo.alt}
+            loading="lazy"
+            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </button>
+      ))
+    ) : (
+      <p class="col-span-full text-muted">Muy pronto más fotos por aquí.</p>
+    )}
+  </div>
+
+  <div class="mb-3 flex items-center justify-center gap-3">
+    <span class="rounded-full border border-dorado/40 px-6 py-2 text-sm font-bold tracking-wide text-dorado">
+      Reels
+    </span>
+  </div>
+  <div class="flex flex-wrap justify-center gap-6">
+    {facebookReels.length > 0 ? (
+      facebookReels.map((url) => <FacebookReel url={url} />)
+    ) : (
+      <p class="text-muted">Muy pronto más reels por aquí.</p>
+    )}
+  </div>
+
+  <dialog
+    id="lightbox"
+    class="m-auto max-h-none max-w-none overscroll-none bg-transparent p-0 backdrop:bg-negro/90"
+  >
+    <div class="relative flex h-screen w-screen items-center justify-center p-6 md:p-10">
+      <button
+        type="button"
+        data-action="close"
+        aria-label="Cerrar"
+        class="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-dorado"
+      >
+        ✕
+      </button>
+      <button
+        type="button"
+        data-action="prev"
+        aria-label="Anterior"
+        class="absolute left-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-xl text-dorado md:left-8"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        data-action="next"
+        aria-label="Siguiente"
+        class="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-xl text-dorado md:right-8"
+      >
+        ›
+      </button>
+      <div id="lightbox-media" class="flex max-h-[85vh] max-w-[90vw] items-center justify-center"></div>
+    </div>
+  </dialog>
+</section>
+
+<script define:vars={{ photos }}>
+  const dialog = document.getElementById("lightbox");
+  const mediaSlot = document.getElementById("lightbox-media");
+  let current = 0;
+
+  function render(index) {
+    current = (index + photos.length) % photos.length;
+    const photo = photos[current];
+    mediaSlot.innerHTML = `<img src="${photo.fullSrc}" alt="${photo.alt}" class="max-h-[85vh] max-w-[90vw] rounded-md object-contain" />`;
+  }
+
+  document.querySelectorAll(".gallery-trigger").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      render(Number(btn.dataset.index));
+      dialog.showModal();
+    });
+  });
+
+  dialog.querySelector('[data-action="close"]').addEventListener("click", () => dialog.close());
+  dialog.querySelector('[data-action="prev"]').addEventListener("click", () => render(current - 1));
+  dialog.querySelector('[data-action="next"]').addEventListener("click", () => render(current + 1));
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", () => {
+    mediaSlot.innerHTML = "";
+  });
+</script>
