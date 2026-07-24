@@ -62,3 +62,8 @@ temp/
 *.key
 *.crt
 
+# =========================
+# Diseño / referencia interna (no publicar en repo público)
+# =========================
+_context/
+
