@@ -23,6 +23,7 @@ build/
 .cache/
 .vite/
 .parcel-cache/
+.astro/
 
 # =========================
 # Env files

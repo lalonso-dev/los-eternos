@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import bioPhoto from "../assets/images/bio-photo.webp";
+---
+
+<section
+  id="bio"
+  class="mx-auto grid max-w-6xl scroll-mt-24 grid-cols-1 items-center gap-10 px-6 py-24 md:grid-cols-2 md:gap-16 md:px-20 md:py-36"
+>
+  <Image
+    src={bioPhoto}
+    alt="Foto del grupo en escena"
+    width={640}
+    height={800}
+    class="mx-auto aspect-[4/5] w-full max-h-[520px] rounded-lg object-cover"
+  />
+  <div>
+    <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
+      Biografía
+    </div>
+    <h2 class="mb-6 font-display text-4xl font-bold leading-tight text-cream">
+      Nuestra Historia
+    </h2>
+    <p class="mb-5 text-[17px] leading-relaxed text-body-text">
+      Somos Los Eternos, un grupo musical originario de Morelia, Michoacán.
+      Nacimos de la pasión por el norteño clásico, ese sonido de acordeón y
+      bajo sexto que marcó a generaciones.
+    </p>
+    <p class="text-[17px] leading-relaxed text-body-text">
+      Llevamos las viejitas de Ramón Ayala y las grandes leyendas del género
+      a cada fiesta, boda y evento, con instrumentos en vivo y todo el
+      respeto por la tradición norteña.
+    </p>
+  </div>
+</section>

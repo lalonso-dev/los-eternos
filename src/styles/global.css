@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dorado: #d4af37;
+  --color-rojo-profundo: #570d1c;
+  --color-borgona: #79343d;
+  --color-negro: #0a0a0a;
+  --color-cream: oklch(0.95 0.008 60);
+  --color-muted: oklch(0.68 0.015 50);
+  --color-body-text: oklch(0.78 0.015 50);
+
+  --font-display: "Playfair Display", serif;
+  --font-body: "Manrope", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-negro);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--color-dorado);
+  color: var(--color-negro);
+}

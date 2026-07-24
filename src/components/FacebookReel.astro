@@ -1,0 +1,25 @@
+---
+import { extractFacebookUrl } from "../utils/facebookEmbed";
+
+interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+const cleanUrl = extractFacebookUrl(url);
+const src = `https://www.facebook.com/plugins/video.php?height=476&href=${encodeURIComponent(cleanUrl)}&show_text=false&width=267&t=0`;
+---
+
+<div class="overflow-hidden rounded-md border border-dorado/35 bg-rojo-profundo/35">
+  <iframe
+    src={src}
+    width="267"
+    height="476"
+    style="border:none; overflow:hidden; display:block;"
+    scrolling="no"
+    frameborder="0"
+    allowfullscreen
+    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+    loading="lazy"
+  ></iframe>
+</div>

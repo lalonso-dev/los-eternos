@@ -1,0 +1,45 @@
+---
+import Icon from "./Icon.astro";
+import { contacts, whatsappHref, telHref } from "../data/contacts";
+---
+
+<section id="contrataciones" class="scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
+  <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
+    Eventos Privados
+  </div>
+  <h2 class="mb-4 font-display text-4xl font-bold text-cream">Contrataciones</h2>
+  <p class="mx-auto mb-14 max-w-xl text-muted">
+    Escríbenos y coticemos juntos los detalles
+  </p>
+  <div class="mx-auto flex max-w-3xl flex-wrap justify-center gap-10">
+    {contacts.map((contact) => (
+      <div class="flex flex-1 flex-col items-center gap-4" style="flex-basis: 260px; max-width: 320px;">
+        <div class="text-[15px] font-bold text-dorado">
+          Atendido por {contact.name}
+        </div>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a
+            href={whatsappHref(contact)}
+            target="_blank"
+            rel="noreferrer"
+            class="flex w-[130px] flex-col items-center gap-3 rounded-md border border-dorado/35 bg-rojo-profundo/35 px-3 py-7"
+          >
+            <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366]">
+              <Icon name="whatsapp" class="h-5 w-5 text-white" />
+            </span>
+            <span class="text-[13px] font-bold text-cream">WhatsApp</span>
+          </a>
+          <a
+            href={telHref(contact)}
+            class="flex w-[130px] flex-col items-center gap-3 rounded-md border border-dorado/35 bg-rojo-profundo/35 px-3 py-7"
+          >
+            <span class="flex h-11 w-11 items-center justify-center rounded-full bg-dorado">
+              <Icon name="phone" class="h-5 w-5 text-negro" />
+            </span>
+            <span class="text-[13px] font-bold text-cream">Llamar</span>
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
