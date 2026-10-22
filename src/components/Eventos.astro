@@ -4,7 +4,7 @@
   </div>
   <h2 class="mb-10 font-display text-4xl font-bold text-cream">Próximos Eventos</h2>
 
-  <ul id="eventos-lista" class="mx-auto hidden max-w-3xl grid-cols-1 gap-6 text-left sm:grid-cols-2"></ul>
+  <ul id="eventos-lista" class="mx-auto hidden max-w-3xl flex-wrap justify-center gap-6 text-left"></ul>
 
   <div id="eventos-vacio" class="mx-auto max-w-xl rounded-lg border border-dorado/35 bg-rojo-profundo/35 px-6 py-10 md:px-12">
     <p class="mb-6 text-[17px] leading-relaxed text-body-text">
@@ -30,7 +30,7 @@
   function card(e: EventoPublico) {
     const f = formatFecha(e.fecha);
     const li = document.createElement("li");
-    li.className = "overflow-hidden rounded-lg border border-dorado/35 bg-rojo-profundo/35";
+    li.className = "w-full max-w-sm overflow-hidden rounded-lg border border-dorado/35 bg-rojo-profundo/35 sm:w-[calc(50%-0.75rem)]";
 
     if (e.banner_url) {
       const img = document.createElement("img");
@@ -75,7 +75,7 @@
     if (error || !data?.length) return;
     lista.replaceChildren(...data.map(card));
     lista.classList.remove("hidden");
-    lista.classList.add("grid");
+    lista.classList.add("flex");
     vacio.classList.add("hidden");
   }
 

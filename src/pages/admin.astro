@@ -168,7 +168,7 @@ const btn =
   }
 
   function pintarBanner() {
-    drawBanner(canvas, { fecha: val("fecha"), lugar: val("lugar") });
+    drawBanner(canvas, { fecha: val("fecha"), lugar: val("lugar") }).catch((err) => console.error(err));
   }
 
   function resetForm() {
@@ -327,15 +327,21 @@ const btn =
 
     // El banner se genera con fecha y lugar y se sube a Storage para el sitio publico.
     if (!error && res.data) {
-      await drawBanner(canvas, { fecha: row.fecha, lugar: row.lugar });
       const path = `${res.data.id}.jpg`;
-      const up = await supabase.storage.from("banners").upload(path, await bannerBlob(canvas), {
-        upsert: true,
-        contentType: "image/jpeg",
-        cacheControl: "300",
-      });
-      if (up.error) {
-        error = `El evento se guardó pero falló el banner: ${up.error.message}`;
+      let fallo = "";
+      try {
+        await drawBanner(canvas, { fecha: row.fecha, lugar: row.lugar });
+        const up = await supabase.storage.from("banners").upload(path, await bannerBlob(canvas), {
+          upsert: true,
+          contentType: "image/jpeg",
+          cacheControl: "300",
+        });
+        fallo = up.error?.message ?? "";
+      } catch (err) {
+        fallo = err instanceof Error ? err.message : String(err);
+      }
+      if (fallo) {
+        error = `El evento se guardó pero falló el banner (${fallo}). Edítalo y guarda de nuevo para regenerarlo.`;
       } else {
         const url = `${supabase.storage.from("banners").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
         await supabase.from("eventos").update({ banner_url: url }).eq("id", res.data.id);
