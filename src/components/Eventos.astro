@@ -3,7 +3,10 @@
     Agenda
   </div>
   <h2 class="mb-10 font-display text-4xl font-bold text-cream">Próximos Eventos</h2>
-  <div class="mx-auto max-w-xl rounded-lg border border-dorado/35 bg-rojo-profundo/35 px-6 py-10 md:px-12">
+
+  <ul id="eventos-lista" class="mx-auto hidden max-w-3xl grid-cols-1 gap-6 text-left sm:grid-cols-2"></ul>
+
+  <div id="eventos-vacio" class="mx-auto max-w-xl rounded-lg border border-dorado/35 bg-rojo-profundo/35 px-6 py-10 md:px-12">
     <p class="mb-6 text-[17px] leading-relaxed text-body-text">
       Muy pronto anunciaremos nuestras próximas fechas. Síguenos en redes
       para no perderte ningún evento.
@@ -16,3 +19,65 @@
     </a>
   </div>
 </section>
+
+<script>
+  import { supabase, formatFecha, COLUMNAS_PUBLICAS, type EventoPublico } from "../lib/supabase";
+
+  const lista = document.getElementById("eventos-lista")!;
+  const vacio = document.getElementById("eventos-vacio")!;
+
+  // Publico: solo fecha, lugar y banner. Horarios, mapa y notas son solo para musicos.
+  function card(e: EventoPublico) {
+    const f = formatFecha(e.fecha);
+    const li = document.createElement("li");
+    li.className = "overflow-hidden rounded-lg border border-dorado/35 bg-rojo-profundo/35";
+
+    if (e.banner_url) {
+      const img = document.createElement("img");
+      img.src = e.banner_url;
+      img.alt = `Los Eternos en ${e.lugar}, ${f.larga}`;
+      img.loading = "lazy";
+      img.className = "block aspect-square w-full object-cover";
+      li.append(img);
+      return li;
+    }
+
+    const row = document.createElement("div");
+    row.className = "flex items-center gap-5 p-4 md:p-5";
+    const fecha = document.createElement("div");
+    fecha.className = "flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-md bg-dorado text-negro";
+    fecha.innerHTML = `<span class="text-3xl font-extrabold leading-none"></span><span class="text-xs font-bold tracking-widest"></span>`;
+    fecha.children[0].textContent = f.dia;
+    fecha.children[1].textContent = f.mes;
+    const info = document.createElement("div");
+    const lugar = document.createElement("div");
+    lugar.className = "font-display text-xl font-bold text-cream";
+    lugar.textContent = e.lugar;
+    const detalle = document.createElement("div");
+    detalle.className = "text-sm capitalize text-muted";
+    detalle.textContent = f.larga;
+    info.append(lugar, detalle);
+    row.append(fecha, info);
+    li.append(row);
+    return li;
+  }
+
+  async function cargar() {
+    const hoy = new Date().toLocaleDateString("en-CA");
+    const { data, error } = await supabase
+      .from("eventos")
+      .select(COLUMNAS_PUBLICAS)
+      .eq("publicado", true)
+      .gte("fecha", hoy)
+      .order("fecha", { ascending: true });
+
+    // Ante cualquier error o sin eventos se queda el mensaje por defecto.
+    if (error || !data?.length) return;
+    lista.replaceChildren(...data.map(card));
+    lista.classList.remove("hidden");
+    lista.classList.add("grid");
+    vacio.classList.add("hidden");
+  }
+
+  cargar();
+</script>
