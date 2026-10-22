@@ -54,15 +54,9 @@ export async function drawBanner(canvas: HTMLCanvasElement, data: BannerData) {
   await Promise.all([document.fonts.load("100px Anton"), document.fonts.load("600 30px Manrope")]);
 
   const [base, logo] = await Promise.all([loadImage("/assets/banner/base.jpg"), loadImage("/assets/banner/logo.png")]);
-  if (base) {
-    drawCover(ctx, base);
-  } else {
-    const g = ctx.createLinearGradient(0, 0, SIZE, SIZE);
-    g.addColorStop(0, "#570d1c");
-    g.addColorStop(1, "#0a0a0a");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, SIZE, SIZE);
-  }
+  // Sin la foto o el logo el banner saldria incompleto: mejor fallar que subir uno mal hecho.
+  if (!base || !logo) throw new Error("No cargaron la foto base o el logo del banner");
+  drawCover(ctx, base);
 
   // Franja oscura abajo para que fecha, logo y telefonos siempre se lean.
   const franja = 700;
@@ -108,11 +102,8 @@ export async function drawBanner(canvas: HTMLCanvasElement, data: BannerData) {
 
   // Pie: logo a la izquierda, contrataciones a la derecha.
   const pieY = 945;
-  if (logo) {
-    const h = 110;
-    const w = (logo.width / logo.height) * h;
-    ctx.drawImage(logo, 50, pieY, w, h);
-  }
+  const hLogo = 110;
+  ctx.drawImage(logo, 50, pieY, (logo.width / logo.height) * hLogo, hLogo);
 
   ctx.textAlign = "center";
   ctx.fillStyle = CREMA;
