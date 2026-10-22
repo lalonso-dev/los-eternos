@@ -6,11 +6,13 @@ import bioPhoto from "../assets/images/bio-photo.webp";
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title = "Los Eternos - Grupo Norteño",
   description = "Los Eternos, grupo norteño de Morelia, Michoacán. Música auténtica directo del corazón para bodas, fiestas y eventos.",
+  noindex = false,
 } = Astro.props;
 
 const ogImage = await getImage({ src: bioPhoto, width: 1200, height: 630, fit: "cover" });
@@ -27,6 +29,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="theme-color" content="#0a0a0a" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
@@ -56,6 +59,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <slot name="head" />
   </head>
   <body class="bg-negro text-cream font-body overflow-x-hidden">
     <slot />

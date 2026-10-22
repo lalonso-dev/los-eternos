@@ -1,0 +1,364 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "flatpickr/dist/flatpickr.min.css";
+
+const input =
+  "w-full rounded border border-dorado/35 bg-negro/60 px-3 py-2.5 text-cream outline-none focus:border-dorado";
+const label = "mb-1 block text-xs font-bold uppercase tracking-widest text-dorado";
+const btn =
+  "rounded bg-dorado px-5 py-3 text-sm font-bold text-negro transition hover:brightness-110 disabled:opacity-50";
+---
+
+<BaseLayout title="Panel · Los Eternos" noindex>
+  <link
+    slot="head"
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Anton&display=swap"
+  />
+  <main class="mx-auto max-w-2xl px-6 py-12">
+    <h1 class="mb-8 font-display text-3xl font-bold text-cream">Panel de eventos</h1>
+
+    <form id="login" class="hidden flex-col gap-4 rounded-lg border border-dorado/35 bg-rojo-profundo/35 p-6">
+      <div><label class={label} for="email">Correo</label><input id="email" type="email" required autocomplete="email" class={input} /></div>
+      <div><label class={label} for="password">Contraseña</label><input id="password" type="password" required autocomplete="current-password" class={input} /></div>
+      <button class={btn} type="submit">Entrar</button>
+      <p id="login-msg" class="text-sm text-red-300"></p>
+    </form>
+
+    <div id="panel" class="hidden">
+      <div class="mb-6 flex items-center justify-between text-sm text-muted">
+        <span><span id="quien"></span> · <span id="rol" class="font-bold text-dorado"></span></span>
+        <button id="salir" class="underline">Salir</button>
+      </div>
+
+      <p id="sin-acceso" class="hidden rounded-lg border border-red-300/40 p-4 text-red-300">
+        Tu cuenta aún no tiene acceso. Pídele a un administrador que te dé de alta.
+      </p>
+
+      <!-- Solo admin -->
+      <div id="admin-only" class="hidden">
+        <form id="evento-form" class="mb-4 grid gap-4 rounded-lg border border-dorado/35 bg-rojo-profundo/35 p-6 sm:grid-cols-2">
+          <h2 id="form-titulo" class="font-display text-xl font-bold text-cream sm:col-span-2">Nuevo evento</h2>
+
+          <div class="sm:col-span-2">
+            <label class={label} for="fecha">Fecha</label>
+            <input id="fecha" type="text" class="hidden" tabindex="-1" aria-hidden="true" />
+            <p id="fecha-texto" class="mt-1 text-sm text-body-text">Elige un día en el calendario.</p>
+          </div>
+          <div><label class={label} for="hora_inicio">Hora de inicio</label><input id="hora_inicio" type="text" placeholder="Elegir hora" class={input} /></div>
+          <div><label class={label} for="hora_fin">Hora de fin</label><input id="hora_fin" type="text" placeholder="Elegir hora" class={input} /></div>
+          <p id="duracion" class="text-sm text-body-text sm:col-span-2"></p>
+          <div class="sm:col-span-2">
+            <label class={label} for="lugar">Lugar (ciudad)</label>
+            <input id="lugar" required maxlength="60" placeholder="Zacapu, Mich" class={input} />
+            <p class="mt-1 text-xs text-muted">Esto se muestra al público y en el banner.</p>
+          </div>
+          <div class="sm:col-span-2"><label class={label} for="maps_url">Ubicación en Google Maps</label><input id="maps_url" type="url" placeholder="https://maps.app.goo.gl/..." class={input} /></div>
+          <div class="sm:col-span-2"><label class={label} for="notas">Notas para los músicos</label><textarea id="notas" rows="2" maxlength="500" class={input}></textarea></div>
+          <label class="flex items-center gap-2 text-sm text-body-text sm:col-span-2">
+            <input id="publicado" type="checkbox" checked /> Publicado en el sitio
+          </label>
+          <div class="flex gap-3 sm:col-span-2">
+            <button class={btn} type="submit" id="guardar">Guardar</button>
+            <button type="button" id="cancelar" class="hidden text-sm text-muted underline">Cancelar edición</button>
+          </div>
+          <p id="form-msg" class="text-sm sm:col-span-2"></p>
+        </form>
+
+        <div class="mb-10 rounded-lg border border-dorado/35 bg-rojo-profundo/35 p-6">
+          <h2 class="mb-4 font-display text-xl font-bold text-cream">Banner</h2>
+          <canvas id="banner" class="mx-auto mb-4 w-full max-w-sm rounded border border-dorado/35"></canvas>
+          <button id="descargar" class={btn} type="button">Descargar imagen</button>
+          <p class="mt-2 text-xs text-muted">Se genera sola al guardar el evento y es la que se ve en el sitio.</p>
+        </div>
+      </div>
+
+      <h2 class="mb-4 font-display text-xl font-bold text-cream">Eventos</h2>
+      <ul id="lista" class="flex flex-col gap-3"></ul>
+    </div>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  /* Calendario en la paleta del sitio */
+  .flatpickr-calendar { background: #1a0509; border: 1px solid rgba(212,175,55,.35); box-shadow: none; width: 100%; max-width: 330px; }
+  .flatpickr-calendar.inline { margin-top: 8px; }
+  .flatpickr-months .flatpickr-month, .flatpickr-current-month .flatpickr-monthDropdown-months,
+  .flatpickr-current-month input.cur-year, span.flatpickr-weekday { color: #f5efe9; fill: #f5efe9; background: transparent; }
+  .flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg { fill: #d4af37; }
+  .flatpickr-day { color: #f5efe9; }
+  .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay, .flatpickr-day.flatpickr-disabled { color: rgba(245,239,233,.3); }
+  .flatpickr-day:hover { background: rgba(212,175,55,.2); border-color: transparent; }
+  .flatpickr-day.today { border-color: #d4af37; }
+  .flatpickr-time, .flatpickr-time input, .flatpickr-time .flatpickr-am-pm { background: #1a0509; color: #f5efe9; }
+  .flatpickr-time input:hover, .flatpickr-time .flatpickr-am-pm:hover, .flatpickr-time input:focus, .flatpickr-time .flatpickr-am-pm:focus { background: rgba(212,175,55,.2); }
+  .flatpickr-time .numInputWrapper span.arrowUp:after { border-bottom-color: #d4af37; }
+  .flatpickr-time .numInputWrapper span.arrowDown:after { border-top-color: #d4af37; }
+  .flatpickr-time .flatpickr-time-separator { color: #f5efe9; }
+  .flatpickr-calendar.noCalendar { border: 1px solid rgba(212,175,55,.35); }
+  .flatpickr-calendar:before, .flatpickr-calendar:after { display: none; }
+  .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #d4af37; border-color: #d4af37; color: #0a0a0a; }
+</style>
+
+<script>
+  import flatpickr from "flatpickr";
+  import { Spanish } from "flatpickr/dist/l10n/es.js";
+  import { supabase, formatFecha, formatHora, duracion, type Evento, type Rol } from "../lib/supabase";
+  import { drawBanner, bannerBlob } from "../utils/banner";
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const loginForm = $<HTMLFormElement>("login");
+  const panel = $("panel");
+  const form = $<HTMLFormElement>("evento-form");
+  const msg = $("form-msg");
+  const canvas = $<HTMLCanvasElement>("banner");
+  let editId: string | null = null;
+  let rol: Rol | null = null;
+
+  const val = (id: string) => $<HTMLInputElement>(id).value.trim();
+  const set = (id: string, v: string) => ($<HTMLInputElement>(id).value = v);
+
+  // Calendario siempre visible, sin depender del selector nativo del navegador.
+  const calendario = flatpickr($<HTMLInputElement>("fecha"), {
+    locale: Spanish,
+    inline: true,
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    defaultDate: "today",
+    onChange: () => {
+      actualizarFechaTexto();
+      pintarBanner();
+    },
+  });
+
+  actualizarFechaTexto();
+
+  function actualizarFechaTexto() {
+    const f = val("fecha");
+    $("fecha-texto").textContent = f ? `${formatFecha(f).semana}, ${formatFecha(f).larga}` : "Elige un día en el calendario.";
+  }
+
+  // Selector de hora al hacer clic (de 15 en 15 minutos), se muestra como 3:00 p.m.
+  const opcionesHora = {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    altInput: true,
+    altFormat: "h:i K",
+    altInputClass: "w-full rounded border border-dorado/35 bg-negro/60 px-3 py-2.5 text-cream outline-none focus:border-dorado",
+    minuteIncrement: 15,
+    time_24hr: false,
+    locale: Spanish,
+    defaultHour: 20,
+    disableMobile: true,
+    onChange: () => actualizarDuracion(),
+  } as const;
+  function actualizarDuracion() {
+    const d = duracion(val("hora_inicio") || null, val("hora_fin") || null);
+    $("duracion").textContent = d ? `Tiempo estimado: ${d}` : "";
+  }
+
+  const horaInicio = flatpickr($<HTMLInputElement>("hora_inicio"), opcionesHora);
+  const horaFin = flatpickr($<HTMLInputElement>("hora_fin"), opcionesHora);
+
+  function show(logged: boolean) {
+    loginForm.classList.toggle("hidden", logged);
+    loginForm.classList.toggle("flex", !logged);
+    panel.classList.toggle("hidden", !logged);
+  }
+
+  function pintarBanner() {
+    drawBanner(canvas, { fecha: val("fecha"), lugar: val("lugar") });
+  }
+
+  function resetForm() {
+    editId = null;
+    form.reset();
+    calendario.setDate(new Date(), false);
+    horaInicio.clear();
+    horaFin.clear();
+    actualizarDuracion();
+    actualizarFechaTexto();
+    $<HTMLInputElement>("publicado").checked = true;
+    $("form-titulo").textContent = "Nuevo evento";
+    $("cancelar").classList.add("hidden");
+    pintarBanner();
+  }
+
+  function editar(e: Evento) {
+    editId = e.id;
+    // Al editar un evento pasado el calendario debe permitir su fecha.
+    calendario.set("minDate", undefined);
+    calendario.setDate(e.fecha, false);
+    actualizarFechaTexto();
+    horaInicio.setDate(e.hora_inicio?.slice(0, 5) ?? "", false);
+    horaFin.setDate(e.hora_fin?.slice(0, 5) ?? "", false);
+    actualizarDuracion();
+    set("lugar", e.lugar);
+    set("maps_url", e.maps_url ?? "");
+    set("notas", e.notas ?? "");
+    $<HTMLInputElement>("publicado").checked = e.publicado;
+    $("form-titulo").textContent = "Editar evento";
+    $("cancelar").classList.remove("hidden");
+    pintarBanner();
+    form.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function linea(texto: string, clase: string) {
+    const d = document.createElement("div");
+    d.className = clase;
+    d.textContent = texto;
+    return d;
+  }
+
+  async function listar() {
+    const { data, error } = await supabase.from("eventos").select("*").order("fecha", { ascending: false });
+    const ul = $("lista");
+    if (error) {
+      ul.textContent = `No se pudo cargar: ${error.message}`;
+      return;
+    }
+    ul.replaceChildren(
+      ...(data as Evento[]).map((e) => {
+        const f = formatFecha(e.fecha);
+        const li = document.createElement("li");
+        li.className = "flex items-start justify-between gap-3 rounded border border-dorado/25 bg-rojo-profundo/25 p-3";
+
+        const t = document.createElement("div");
+        t.className = "min-w-0 text-sm";
+        t.append(linea(`${f.dia} ${f.mes} · ${e.lugar}${e.publicado ? "" : " (borrador)"}`, "font-bold text-cream"));
+        const horario = [formatHora(e.hora_inicio), formatHora(e.hora_fin)].filter(Boolean).join(" a ");
+        if (horario) {
+          const d = duracion(e.hora_inicio, e.hora_fin);
+          t.append(linea(`Horario: ${horario}${d ? ` (${d})` : ""}`, "text-muted"));
+        }
+        if (e.notas) t.append(linea(e.notas, "text-muted"));
+        if (e.maps_url && /^https?:\/\//i.test(e.maps_url)) {
+          const a = document.createElement("a");
+          a.href = e.maps_url;
+          a.target = "_blank";
+          a.rel = "noreferrer";
+          a.className = "text-dorado underline";
+          a.textContent = "Ver ubicación en Google Maps";
+          t.append(a);
+        }
+        li.append(t);
+
+        if (rol === "admin") {
+          const acciones = document.createElement("div");
+          acciones.className = "flex shrink-0 gap-3 text-sm";
+          const b1 = document.createElement("button");
+          b1.textContent = "Editar";
+          b1.className = "text-dorado underline";
+          b1.onclick = () => editar(e);
+          const b2 = document.createElement("button");
+          b2.textContent = "Borrar";
+          b2.className = "text-red-300 underline";
+          b2.onclick = async () => {
+            if (!confirm(`¿Borrar "${e.lugar}"?`)) return;
+            await supabase.from("eventos").delete().eq("id", e.id);
+            await supabase.storage.from("banners").remove([`${e.id}.jpg`]);
+            listar();
+          };
+          acciones.append(b1, b2);
+          li.append(acciones);
+        }
+        return li;
+      }),
+    );
+  }
+
+  async function iniciar(session: { user: { id: string; email?: string } } | null) {
+    show(!!session);
+    if (!session) return;
+    $("quien").textContent = session.user.email ?? "";
+
+    const { data } = await supabase.from("perfiles").select("rol").eq("user_id", session.user.id).maybeSingle();
+    rol = (data?.rol as Rol | undefined) ?? null;
+    $("rol").textContent = rol === "admin" ? "Administrador" : rol === "musico" ? "Músico" : "";
+    $("sin-acceso").classList.toggle("hidden", rol !== null);
+    $("admin-only").classList.toggle("hidden", rol !== "admin");
+    if (!rol) return;
+    if (rol === "admin") pintarBanner();
+    listar();
+  }
+
+  loginForm.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const { error } = await supabase.auth.signInWithPassword({ email: val("email"), password: $<HTMLInputElement>("password").value });
+    $("login-msg").textContent = error ? "Correo o contraseña incorrectos." : "";
+  });
+
+  $("salir").onclick = () => supabase.auth.signOut();
+  $("cancelar").onclick = () => {
+    calendario.set("minDate", "today");
+    resetForm();
+  };
+  $("lugar").addEventListener("input", pintarBanner);
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const btnGuardar = $<HTMLButtonElement>("guardar");
+    btnGuardar.disabled = true;
+    msg.className = "text-sm text-muted sm:col-span-2";
+    msg.textContent = "Guardando...";
+
+    if (!val("fecha")) {
+      msg.className = "text-sm text-red-300 sm:col-span-2";
+      msg.textContent = "Elige una fecha en el calendario.";
+      btnGuardar.disabled = false;
+      return;
+    }
+
+    const row = {
+      fecha: val("fecha"),
+      hora_inicio: val("hora_inicio") || null,
+      hora_fin: val("hora_fin") || null,
+      lugar: val("lugar"),
+      maps_url: val("maps_url") || null,
+      notas: val("notas") || null,
+      publicado: $<HTMLInputElement>("publicado").checked,
+    };
+
+    const res = editId
+      ? await supabase.from("eventos").update(row).eq("id", editId).select("id").single()
+      : await supabase.from("eventos").insert(row).select("id").single();
+    let error = res.error?.message;
+
+    // El banner se genera con fecha y lugar y se sube a Storage para el sitio publico.
+    if (!error && res.data) {
+      await drawBanner(canvas, { fecha: row.fecha, lugar: row.lugar });
+      const path = `${res.data.id}.jpg`;
+      const up = await supabase.storage.from("banners").upload(path, await bannerBlob(canvas), {
+        upsert: true,
+        contentType: "image/jpeg",
+        cacheControl: "300",
+      });
+      if (up.error) {
+        error = `El evento se guardó pero falló el banner: ${up.error.message}`;
+      } else {
+        const url = `${supabase.storage.from("banners").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
+        await supabase.from("eventos").update({ banner_url: url }).eq("id", res.data.id);
+      }
+    }
+
+    msg.className = `text-sm sm:col-span-2 ${error ? "text-red-300" : "text-green-300"}`;
+    msg.textContent = error ? `Error: ${error}` : "Guardado.";
+    btnGuardar.disabled = false;
+    if (!error) {
+      calendario.set("minDate", "today");
+      resetForm();
+      listar();
+    }
+  });
+
+  $("descargar").onclick = async () => {
+    await drawBanner(canvas, { fecha: val("fecha"), lugar: val("lugar") });
+    const a = document.createElement("a");
+    a.download = `los-eternos-${val("fecha") || "evento"}.png`;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  };
+
+  supabase.auth.onAuthStateChange((_e, session) => iniciar(session));
+</script>
