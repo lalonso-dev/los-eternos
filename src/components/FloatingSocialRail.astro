@@ -5,7 +5,7 @@ import { socialLinks } from "../data/socialLinks";
 
 <div
   id="floating-social-rail"
-  class="fixed inset-x-0 bottom-0 z-40 flex justify-center gap-3.5 border-t border-dorado/25 bg-negro/55 px-3 py-2.5 pb-[max(env(safe-area-inset-bottom,12px),10px)] backdrop-blur-md md:inset-x-auto md:bottom-auto md:right-7 md:top-1/2 md:flex-col md:-translate-y-1/2 md:border-t-0 md:bg-transparent md:p-0 md:backdrop-blur-none"
+  class="fixed inset-x-0 bottom-0 z-40 flex justify-center gap-3.5 border-t border-dorado/20 bg-negro/75 px-3 py-2.5 pb-[max(env(safe-area-inset-bottom,12px),10px)] backdrop-blur-md md:inset-x-auto md:bottom-auto md:right-7 md:top-1/2 md:flex-col md:-translate-y-1/2 md:border-t-0 md:bg-transparent md:p-0 md:backdrop-blur-none"
 >
   {socialLinks.map((social) => (
     <a
@@ -14,10 +14,10 @@ import { socialLinks } from "../data/socialLinks";
       rel="noreferrer"
       aria-label={social.name}
       title={social.name}
-      class="flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-dorado/50"
-      style={`background-color: ${social.color}`}
+      class="icon-ring h-11 w-11 !border-dorado/40 hover:-translate-y-0.5"
+      style={`--brand: ${social.color}`}
     >
-      <Icon name={social.icon} class="h-6 w-6 text-white" />
+      <Icon name={social.icon} class="h-5 w-5" />
     </a>
   ))}
 </div>

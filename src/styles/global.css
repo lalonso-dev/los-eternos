@@ -1,20 +1,35 @@
 @import "tailwindcss";
 
+/*
+ * Paleta "Grafito & Oro": sacada de la portada oficial
+ * (chaquetas de cuero grafito, humo gris, letras doradas).
+ */
 @theme {
-  --color-dorado: #d4af37;
-  --color-rojo-profundo: #570d1c;
-  --color-borgona: #79343d;
-  --color-negro: #0a0a0a;
-  --color-cream: oklch(0.95 0.008 60);
-  --color-muted: oklch(0.68 0.015 50);
-  --color-body-text: oklch(0.78 0.015 50);
+  --color-negro: #0b0b0c;
+  --color-carbon: #151517;
+  --color-grafito: #1a1a1d;
+  --color-acero: #2a2a2f;
+  --color-humo: #9a9ca1;
+  --color-cream: #f1ede4;
+  --color-body-text: #c4c2bc;
+  --color-muted: #9a9ca1;
 
-  --font-display: "Playfair Display", serif;
+  --color-dorado: #c9a24d;
+  --color-dorado-claro: #f0d78f;
+  --color-dorado-oscuro: #8c6a24;
+
+  --font-display: "Cinzel", serif;
   --font-body: "Manrope", sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -25,4 +40,175 @@ body {
 ::selection {
   background: var(--color-dorado);
   color: var(--color-negro);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-dorado-claro);
+  outline-offset: 3px;
+}
+
+/* ---------- Componentes reutilizables ---------- */
+
+/* Banda de sección alterna: carbón con un resplandor dorado muy tenue arriba */
+.band {
+  background-color: var(--color-carbon);
+  background-image: radial-gradient(
+    60% 70% at 50% 0%,
+    rgb(201 162 77 / 0.09),
+    transparent 72%
+  );
+  border-block: 1px solid rgb(201 162 77 / 0.12);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-dorado);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--color-cream);
+}
+
+/* Divisor: línea – rombo – línea (eco del ornamento del logo) */
+.orn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.4rem auto 1.2rem;
+}
+.orn span {
+  height: 1px;
+  width: 4.5rem;
+  background: linear-gradient(90deg, transparent, var(--color-dorado));
+}
+.orn span:last-child {
+  background: linear-gradient(270deg, transparent, var(--color-dorado));
+}
+.orn i {
+  width: 7px;
+  height: 7px;
+  rotate: 45deg;
+  background: var(--color-dorado);
+}
+
+/* Tarjeta de grafito con filo dorado */
+.card {
+  position: relative;
+  border-radius: 0.6rem;
+  border: 1px solid rgb(201 162 77 / 0.18);
+  background: linear-gradient(160deg, var(--color-grafito), var(--color-carbon));
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-dorado), transparent);
+  opacity: 0.55;
+  pointer-events: none;
+}
+a.card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(201 162 77 / 0.6);
+  box-shadow:
+    0 18px 40px -18px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(201 162 77 / 0.08);
+}
+
+/* Icono: aro dorado sobre negro; al pasar el cursor toma el color de la marca */
+.icon-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgb(201 162 77 / 0.5);
+  background: var(--color-negro);
+  color: var(--color-dorado);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+.card:hover .icon-ring,
+a.icon-ring:hover {
+  background: var(--brand, var(--color-dorado));
+  border-color: var(--brand, var(--color-dorado));
+  color: var(--brand-ink, #fff);
+}
+
+/* Botones */
+.btn-gold {
+  display: inline-block;
+  border-radius: 0.3rem;
+  padding: 0.95rem 2rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-negro);
+  background: linear-gradient(
+    180deg,
+    var(--color-dorado-claro),
+    var(--color-dorado) 55%,
+    var(--color-dorado-oscuro)
+  );
+  box-shadow: 0 10px 28px -12px rgb(201 162 77 / 0.65);
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+.btn-gold:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+.btn-ghost {
+  display: inline-block;
+  border-radius: 0.3rem;
+  border: 1px solid rgb(241 237 228 / 0.35);
+  padding: 0.95rem 2rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-cream);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.btn-ghost:hover {
+  border-color: var(--color-dorado);
+  color: var(--color-dorado-claro);
+  transform: translateY(-2px);
+}
+
+/* Texto con degradado dorado metálico */
+.text-oro {
+  background: linear-gradient(
+    180deg,
+    var(--color-dorado-claro),
+    var(--color-dorado) 55%,
+    var(--color-dorado-oscuro)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

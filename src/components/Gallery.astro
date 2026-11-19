@@ -1,4 +1,5 @@
 ---
+import SectionHeader from "./SectionHeader.astro";
 import { getImage } from "astro:assets";
 import { facebookReels } from "../data/facebookReels";
 import FacebookReel from "./FacebookReel.astro";
@@ -18,16 +19,14 @@ const photos = await Promise.all(
 ---
 
 <section id="galeria" class="mx-auto max-w-6xl scroll-mt-24 px-6 py-24 md:px-20 md:py-36">
-  <div class="mb-14 text-center">
-    <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
-      Galería
-    </div>
-    <h2 class="mb-4 font-display text-4xl font-bold text-cream">Momentos en Vivo</h2>
-    <p class="text-muted">Instantes inolvidables junto a nuestro público</p>
-  </div>
+  <SectionHeader
+    eyebrow="Galería"
+    title="Momentos en Vivo"
+    subtitle="Instantes inolvidables junto a nuestro público"
+  />
 
-  <div class="mb-3 flex items-center justify-center gap-3">
-    <span class="rounded-full border border-dorado/40 px-6 py-2 text-sm font-bold tracking-wide text-dorado">
+  <div class="flex items-center justify-center gap-3">
+    <span class="mb-4 rounded-full border border-dorado/40 px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-dorado">
       Fotos
     </span>
   </div>
@@ -37,13 +36,13 @@ const photos = await Promise.all(
         <button
           type="button"
           data-index={i}
-          class="gallery-trigger group relative aspect-square cursor-pointer overflow-hidden rounded-md"
+          class="gallery-trigger group relative aspect-square cursor-pointer overflow-hidden rounded-md border border-dorado/10 transition-colors duration-300 hover:border-dorado/60"
         >
           <img
             src={photo.thumbSrc}
             alt={photo.alt}
             loading="lazy"
-            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            class="h-full w-full object-cover grayscale-[25%] transition duration-500 group-hover:scale-105 group-hover:grayscale-0"
           />
         </button>
       ))
@@ -52,29 +51,34 @@ const photos = await Promise.all(
     )}
   </div>
 
-  <div class="mb-3 flex items-center justify-center gap-3">
-    <span class="rounded-full border border-dorado/40 px-6 py-2 text-sm font-bold tracking-wide text-dorado">
+  <div class="flex items-center justify-center gap-3">
+    <span class="mb-4 rounded-full border border-dorado/40 px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-dorado">
       Reels
     </span>
   </div>
-  <div class="flex flex-wrap justify-center gap-6">
+  <!-- Móvil: carrusel con swipe. Escritorio: cuadrícula centrada. -->
+  <div
+    id="reels-track"
+    class="reels-track -mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-6 px-6 pb-2 md:mx-0 md:flex-wrap md:justify-center md:gap-6 md:overflow-visible md:px-0 md:pb-0"
+  >
     {facebookReels.length > 0 ? (
       facebookReels.map((url) => <FacebookReel url={url} />)
     ) : (
-      <p class="text-muted">Muy pronto más reels por aquí.</p>
+      <p class="mx-auto text-muted">Muy pronto más reels por aquí.</p>
     )}
   </div>
+  <div id="reels-dots" class="mt-5 flex justify-center gap-2.5 md:hidden" role="tablist" aria-label="Reels"></div>
 
   <dialog
     id="lightbox"
-    class="m-auto max-h-none max-w-none overscroll-none bg-transparent p-0 backdrop:bg-negro/90"
+    class="m-auto max-h-none max-w-none overscroll-none bg-transparent p-0 backdrop:bg-negro/95"
   >
     <div class="relative flex h-screen w-screen items-center justify-center p-6 md:p-10">
       <button
         type="button"
         data-action="close"
         aria-label="Cerrar"
-        class="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-dorado"
+        class="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border border-dorado/50 bg-negro/80 text-dorado"
       >
         ✕
       </button>
@@ -82,7 +86,7 @@ const photos = await Promise.all(
         type="button"
         data-action="prev"
         aria-label="Anterior"
-        class="absolute left-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-xl text-dorado md:left-8"
+        class="absolute left-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-dorado/50 bg-negro/80 text-xl text-dorado md:left-8"
       >
         ‹
       </button>
@@ -90,7 +94,7 @@ const photos = await Promise.all(
         type="button"
         data-action="next"
         aria-label="Siguiente"
-        class="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-dorado/60 bg-rojo-profundo/75 text-xl text-dorado md:right-8"
+        class="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-dorado/50 bg-negro/80 text-xl text-dorado md:right-8"
       >
         ›
       </button>
@@ -98,6 +102,81 @@ const photos = await Promise.all(
     </div>
   </dialog>
 </section>
+
+<style is:global>
+  .reels-track {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .reels-track::-webkit-scrollbar {
+    display: none;
+  }
+  .reel-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 9999px;
+    background: rgb(201 162 77 / 0.3);
+    transition:
+      width 0.25s ease,
+      background-color 0.25s ease;
+  }
+  .reel-dot[aria-selected="true"] {
+    width: 24px;
+    background: var(--color-dorado);
+  }
+</style>
+
+<script>
+  // Puntos del carrusel de reels (solo visibles en móvil).
+  const track = document.getElementById("reels-track");
+  const dotsBox = document.getElementById("reels-dots");
+  const items = track ? Array.from(track.children) as HTMLElement[] : [];
+
+  if (track && dotsBox && items.length > 1) {
+    const dots = items.map((item, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "reel-dot";
+      dot.setAttribute("role", "tab");
+      dot.setAttribute("aria-label", `Reel ${i + 1} de ${items.length}`);
+      dot.addEventListener("click", () => {
+        const left = item.offsetLeft - (track.clientWidth - item.offsetWidth) / 2;
+        track.scrollTo({ left, behavior: "smooth" });
+      });
+      dotsBox.append(dot);
+      return dot;
+    });
+
+    const update = () => {
+      const center = track.scrollLeft + track.clientWidth / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      items.forEach((item, i) => {
+        const dist = Math.abs(item.offsetLeft + item.offsetWidth / 2 - center);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      });
+      dots.forEach((d, i) => d.setAttribute("aria-selected", String(i === best)));
+    };
+
+    let ticking = false;
+    track.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    update();
+  }
+</script>
 
 <script define:vars={{ photos }}>
   const dialog = document.getElementById("lightbox");

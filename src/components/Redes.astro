@@ -1,29 +1,28 @@
 ---
 import Icon from "./Icon.astro";
+import SectionHeader from "./SectionHeader.astro";
 import { socialLinks } from "../data/socialLinks";
 ---
 
 <section id="redes" class="scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
-  <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
-    Comunidad
-  </div>
-  <h2 class="mb-4 font-display text-4xl font-bold text-cream">Síguenos en Redes</h2>
-  <p class="mb-14 text-muted">Mantente al día con nuestras presentaciones, videos y más</p>
+  <SectionHeader
+    eyebrow="Comunidad"
+    title="Síguenos en Redes"
+    subtitle="Mantente al día con nuestras presentaciones, videos y más"
+  />
   <div class="mx-auto flex max-w-4xl flex-wrap justify-center gap-6">
     {socialLinks.map((social) => (
       <a
         href={social.href}
         target="_blank"
         rel="noreferrer"
-        class="flex w-full max-w-[260px] flex-1 flex-col items-center gap-4 rounded-md border border-dorado/35 bg-rojo-profundo/35 px-6 py-10"
+        class="card flex w-full max-w-[260px] flex-1 flex-col items-center gap-4 px-6 py-10"
+        style={`--brand: ${social.color}`}
       >
-        <span
-          class="flex h-14 w-14 items-center justify-center rounded-full"
-          style={`background-color: ${social.color}`}
-        >
-          <Icon name={social.icon} class="h-7 w-7 text-white" />
+        <span class="icon-ring h-14 w-14">
+          <Icon name={social.icon} class="h-6 w-6" />
         </span>
-        <span class="text-base font-bold text-cream">{social.name}</span>
+        <span class="text-sm font-bold uppercase tracking-[0.14em] text-cream">{social.name}</span>
       </a>
     ))}
   </div>

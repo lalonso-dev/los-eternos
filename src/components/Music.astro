@@ -1,17 +1,18 @@
 ---
 import Icon from "./Icon.astro";
+import SectionHeader from "./SectionHeader.astro";
 import SpotifyEmbed from "./SpotifyEmbed.astro";
 import { musicPlatforms } from "../data/musicPlatforms";
 
 const spotify = musicPlatforms.find((p) => p.icon === "spotify");
 ---
 
-<section id="musica" class="scroll-mt-24 bg-rojo-profundo/[.18] px-6 py-24 text-center md:px-20 md:py-36">
-  <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
-    Escucha
-  </div>
-  <h2 class="mb-4 font-display text-4xl font-bold text-cream">Nuestra Música</h2>
-  <p class="mb-14 text-muted">Encuentra nuestras canciones en tus plataformas favoritas</p>
+<section id="musica" class="band scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
+  <SectionHeader
+    eyebrow="Escucha"
+    title="Nuestra Música"
+    subtitle="Encuentra nuestras canciones en tus plataformas favoritas"
+  />
   {spotify && (
     <div class="mb-14">
       <SpotifyEmbed url={spotify.href} />
@@ -24,15 +25,13 @@ const spotify = musicPlatforms.find((p) => p.icon === "spotify");
         href={platform.href}
         target="_blank"
         rel="noreferrer"
-        class="flex w-full max-w-[260px] flex-1 flex-col items-center gap-4 rounded-md border border-dorado/35 bg-rojo-profundo/35 px-6 py-10"
+        class="card flex w-full max-w-[260px] flex-1 flex-col items-center gap-4 px-6 py-10"
+        style={`--brand: ${platform.color}`}
       >
-        <span
-          class="flex h-14 w-14 items-center justify-center rounded-full"
-          style={`background-color: ${platform.color}`}
-        >
-          <Icon name={platform.icon} class="h-7 w-7 text-white" />
+        <span class="icon-ring h-14 w-14">
+          <Icon name={platform.icon} class="h-6 w-6" />
         </span>
-        <span class="text-base font-bold text-cream">{platform.name}</span>
+        <span class="text-sm font-bold uppercase tracking-[0.14em] text-cream">{platform.name}</span>
       </a>
     ))}
   </div>
