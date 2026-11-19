@@ -1,19 +1,20 @@
-<section id="eventos" class="scroll-mt-24 bg-rojo-profundo/[.18] px-6 py-24 text-center md:px-20 md:py-36">
-  <div class="mb-4 text-[13px] font-bold uppercase tracking-[3px] text-dorado">
-    Agenda
-  </div>
-  <h2 class="mb-10 font-display text-4xl font-bold text-cream">Próximos Eventos</h2>
+---
+import SectionHeader from "./SectionHeader.astro";
+---
+
+<section id="eventos" class="band scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
+  <SectionHeader eyebrow="Agenda" title="Próximos Eventos" class="mb-12" />
 
   <ul id="eventos-lista" class="mx-auto hidden max-w-3xl flex-wrap justify-center gap-6 text-left"></ul>
 
-  <div id="eventos-vacio" class="mx-auto max-w-xl rounded-lg border border-dorado/35 bg-rojo-profundo/35 px-6 py-10 md:px-12">
+  <div id="eventos-vacio" class="card mx-auto max-w-xl px-6 py-10 md:px-12">
     <p class="mb-6 text-[17px] leading-relaxed text-body-text">
       Muy pronto anunciaremos nuestras próximas fechas. Síguenos en redes
       para no perderte ningún evento.
     </p>
     <a
       href="#redes"
-      class="inline-block rounded bg-dorado px-7 py-3.5 text-sm font-bold text-negro transition hover:brightness-110"
+      class="btn-gold"
     >
       Ver Redes Sociales
     </a>
@@ -30,7 +31,7 @@
   function card(e: EventoPublico) {
     const f = formatFecha(e.fecha);
     const li = document.createElement("li");
-    li.className = "w-full max-w-sm overflow-hidden rounded-lg border border-dorado/35 bg-rojo-profundo/35 sm:w-[calc(50%-0.75rem)]";
+    li.className = "card w-full max-w-sm overflow-hidden sm:w-[calc(50%-0.75rem)]";
 
     if (e.banner_url) {
       const img = document.createElement("img");
@@ -45,7 +46,7 @@
     const row = document.createElement("div");
     row.className = "flex items-center gap-5 p-4 md:p-5";
     const fecha = document.createElement("div");
-    fecha.className = "flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-md bg-dorado text-negro";
+    fecha.className = "flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-md bg-gradient-to-b from-dorado-claro via-dorado to-dorado-oscuro text-negro";
     fecha.innerHTML = `<span class="text-3xl font-extrabold leading-none"></span><span class="text-xs font-bold tracking-widest"></span>`;
     fecha.children[0].textContent = f.dia;
     fecha.children[1].textContent = f.mes;

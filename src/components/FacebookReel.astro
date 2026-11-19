@@ -10,7 +10,7 @@ const cleanUrl = extractFacebookUrl(url);
 const src = `https://www.facebook.com/plugins/video.php?height=476&href=${encodeURIComponent(cleanUrl)}&show_text=false&width=267&t=0`;
 ---
 
-<div class="overflow-hidden rounded-md border border-dorado/35 bg-rojo-profundo/35">
+<div class="card shrink-0 snap-center overflow-hidden">
   <iframe
     src={src}
     width="267"

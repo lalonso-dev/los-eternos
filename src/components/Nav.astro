@@ -1,4 +1,7 @@
 ---
+import { Image } from "astro:assets";
+import wordmark from "../assets/eternos-logo-nav.png";
+
 const links = [
   { href: "#bio", label: "Historia" },
   { href: "#musica", label: "Música" },
@@ -8,45 +11,165 @@ const links = [
 ---
 <nav
   id="site-nav"
-  class="fixed inset-x-0 top-0 z-50 flex flex-wrap items-center justify-between gap-3 px-6 py-7 transition-[background-color,padding,backdrop-filter] duration-300 md:px-20"
+  class="fixed inset-x-0 top-0 z-50 px-5 py-2 transition-[background-color,padding,backdrop-filter,border-color] duration-300 md:px-20 md:py-3"
 >
-  <a href="#top" class="font-display text-lg font-extrabold tracking-[3px] text-cream md:text-xl">
-    LOS ETERNOS
-  </a>
-  <div class="flex flex-wrap items-center gap-4 md:gap-8">
-    {links.map((link) => (
-      <a
-        href={link.href}
-        class="text-[13px] font-semibold tracking-wide text-cream/90 hover:text-dorado transition-colors"
-      >
-        {link.label}
-      </a>
-    ))}
-    <a
-      href="#contrataciones"
-      class="text-[13px] font-bold tracking-wide text-dorado hover:text-dorado/80 transition-colors"
-    >
-      Contratar
+  <div class="flex items-center justify-between gap-6">
+    <a href="#top" aria-label="Los Eternos, inicio" class="nav-logo block">
+      <Image
+        src={wordmark}
+        alt="Los Eternos"
+        width={400}
+        loading="eager"
+        class="h-7 w-auto drop-shadow-[0_2px_10px_rgb(0_0_0/0.7)] md:h-14"
+      />
     </a>
+
+    <div class="flex items-center gap-4 md:gap-9">
+      <div class="hidden items-center gap-9 md:flex">
+        {links.map((link) => (
+          <a href={link.href} class="nav-link">{link.label}</a>
+        ))}
+      </div>
+      <a
+        href="#contrataciones"
+        class="rounded-sm border border-dorado/70 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-dorado transition hover:bg-dorado hover:text-negro md:px-4 md:text-[12px] md:tracking-[0.16em]"
+      >
+        Contratar
+      </a>
+      <button
+        id="nav-toggle"
+        type="button"
+        class="flex h-10 w-10 items-center justify-center rounded-sm text-cream md:hidden"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+      >
+        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path class="icon-open" d="M4 7h16M4 12h16M4 17h16"></path>
+          <path class="icon-close" d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div id="nav-menu" hidden class="md:hidden">
+    <ul class="mt-3 border-t border-dorado/20">
+      {links.map((link) => (
+        <li class="border-b border-white/5">
+          <a
+            href={link.href}
+            class="block py-4 text-center font-display text-sm font-semibold uppercase tracking-[0.28em] text-cream/90 active:text-dorado-claro"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </nav>
 
 <style>
-  #site-nav.nav-scrolled {
-    background-color: oklch(0.14 0.02 30 / 0.9);
-    backdrop-filter: blur(8px);
-    padding-top: 18px;
-    padding-bottom: 18px;
+  /* Sobre la portada el nav es totalmente transparente: sin barra ni línea */
+  #site-nav {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+  }
+  #site-nav a,
+  #site-nav button {
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.65);
+  }
+  /* Al dejar atrás la portada (o con el menú abierto) toma un fondo de vidrio */
+  #site-nav.nav-scrolled,
+  #site-nav.nav-open {
+    background: rgb(11 11 12 / 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: rgb(201 162 77 / 0.12);
+  }
+  #site-nav.nav-open {
+    background: rgb(11 11 12 / 0.96);
+  }
+  .nav-logo img {
+    transition: height 0.3s ease;
+  }
+  @media (min-width: 768px) {
+    #site-nav.nav-scrolled .nav-logo img {
+      height: 2.5rem;
+    }
+    #site-nav.nav-scrolled {
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+  }
+  .icon-close {
+    display: none;
+  }
+  #site-nav.nav-open .icon-open {
+    display: none;
+  }
+  #site-nav.nav-open .icon-close {
+    display: inline;
+  }
+  .nav-link {
+    position: relative;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(241 237 228 / 0.85);
+    transition: color 0.2s ease;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: var(--color-dorado);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+  .nav-link:hover {
+    color: var(--color-dorado-claro);
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
   }
 </style>
 
 <script>
   const nav = document.getElementById("site-nav");
+  const toggle = document.getElementById("nav-toggle");
+  const menu = document.getElementById("nav-menu");
+
   if (nav) {
     const onScroll = () => {
-      nav.classList.toggle("nav-scrolled", window.scrollY > 60);
+      // Transparente mientras se ve la portada; con fondo al salir de ella.
+      const hero = document.getElementById("top");
+      const limit = hero ? hero.offsetHeight - nav.offsetHeight - 40 : 60;
+      nav.classList.toggle("nav-scrolled", window.scrollY > limit);
     };
     document.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+  }
+
+  if (nav && toggle && menu) {
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      nav.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    };
+    toggle.addEventListener("click", () => setOpen(menu.hidden));
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setOpen(false);
+    });
+    // Si se agranda la ventana, el menú móvil no debe quedarse abierto.
+    matchMedia("(min-width: 768px)").addEventListener("change", (e) => {
+      if (e.matches) setOpen(false);
+    });
   }
 </script>

@@ -1,0 +1,17 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  class?: string;
+}
+
+const { eyebrow, title, subtitle, class: className = "mb-14" } = Astro.props;
+---
+
+<header class:list={["text-center", className]}>
+  <div class="eyebrow">{eyebrow}</div>
+  <h2 class="section-title">{title}</h2>
+  <div class="orn" aria-hidden="true"><span></span><i></i><span></span></div>
+  {subtitle && <p class="mx-auto max-w-xl text-muted">{subtitle}</p>}
+</header>
