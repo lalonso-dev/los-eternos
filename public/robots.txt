@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 
-Sitemap: https://los-eternos.lalonso.dev/sitemap-index.xml
+Sitemap: https://los-eternos.site/sitemap-index.xml

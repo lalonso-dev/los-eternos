@@ -11,7 +11,8 @@ const photoModules = import.meta.glob<{ default: ImageMetadata }>(
 
 const photos = await Promise.all(
   Object.values(photoModules).map(async (mod, i) => {
-    const thumb = await getImage({ src: mod.default, width: 500, height: 500, fit: "cover" });
+    // Vertical (4:5) para el carrusel móvil; en escritorio se recorta a cuadrado con object-cover.
+    const thumb = await getImage({ src: mod.default, width: 640, height: 800, fit: "cover" });
     const full = await getImage({ src: mod.default, width: 1600 });
     return { id: `photo-${i}`, alt: `Los Eternos - Foto ${i + 1}`, thumbSrc: thumb.src, fullSrc: full.src };
   })
@@ -30,13 +31,15 @@ const photos = await Promise.all(
       Fotos
     </span>
   </div>
-  <div class="mb-16 grid grid-cols-2 gap-4 md:grid-cols-4">
+  <!-- Móvil: carrusel estilo Material You (muCarousel.ts). Escritorio: cuadrícula de 4 columnas. -->
+  <div id="fotos-track" class="grid grid-cols-2 gap-4 md:grid-cols-4">
     {photos.length > 0 ? (
       photos.map((photo, i) => (
         <button
           type="button"
           data-index={i}
-          class="gallery-trigger group relative aspect-square cursor-pointer overflow-hidden rounded-md border border-dorado/10 transition-colors duration-300 hover:border-dorado/60"
+          aria-label={`Ver foto ${i + 1} en grande`}
+          class="gallery-trigger group relative aspect-[4/5] cursor-pointer overflow-hidden rounded-md border border-dorado/10 transition-colors duration-300 hover:border-dorado/60 md:aspect-square"
         >
           <img
             src={photo.thumbSrc}
@@ -50,6 +53,8 @@ const photos = await Promise.all(
       <p class="col-span-full text-muted">Muy pronto más fotos por aquí.</p>
     )}
   </div>
+  <div id="fotos-dots" class="mb-16 mt-3 flex justify-center gap-2 md:hidden" role="tablist" aria-label="Fotos"></div>
+  <div class="mb-16 hidden md:block"></div>
 
   <div class="flex items-center justify-center gap-3">
     <span class="mb-4 rounded-full border border-dorado/40 px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-dorado">
@@ -111,20 +116,21 @@ const photos = await Promise.all(
   .reels-track::-webkit-scrollbar {
     display: none;
   }
-  .reel-dot {
-    height: 8px;
-    width: 8px;
-    border-radius: 9999px;
-    background: rgb(201 162 77 / 0.3);
-    transition:
-      width 0.25s ease,
-      background-color 0.25s ease;
-  }
-  .reel-dot[aria-selected="true"] {
-    width: 24px;
-    background: var(--color-dorado);
-  }
 </style>
+
+<script>
+  import { initMuCarousel } from "../utils/muCarousel";
+
+  const fotos = document.getElementById("fotos-track");
+  if (fotos) {
+    initMuCarousel(fotos, {
+      ratio: 1.25,
+      ratioMobile: 1.15,
+      dots: document.getElementById("fotos-dots"),
+      mq: "(max-width: 767px)",
+    });
+  }
+</script>
 
 <script>
   // Puntos del carrusel de reels (solo visibles en móvil).

@@ -2,10 +2,34 @@
 import SectionHeader from "./SectionHeader.astro";
 ---
 
-<section id="eventos" class="band scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
+<section id="eventos" class="band scroll-mt-24 overflow-x-clip px-6 py-24 text-center md:px-20 md:py-36">
   <SectionHeader eyebrow="Agenda" title="Próximos Eventos" class="mb-12" />
 
-  <ul id="eventos-lista" class="mx-auto hidden max-w-3xl flex-wrap justify-center gap-6 text-left"></ul>
+  <!-- Carrusel: se desliza con el dedo; en escritorio también con las flechas -->
+  <div id="eventos-carrusel" class="relative hidden">
+    <div class="mx-auto max-w-[1100px]">
+      <ul id="eventos-lista" class="text-left" aria-label="Próximos eventos"></ul>
+    </div>
+    <div class="mt-4 flex items-center justify-center gap-5">
+      <button
+        type="button"
+        id="eventos-prev"
+        aria-label="Evento anterior"
+        class="hidden h-10 w-10 items-center justify-center rounded-full border border-dorado/50 text-lg text-dorado transition hover:bg-dorado hover:text-negro disabled:pointer-events-none disabled:opacity-30 md:flex"
+      >
+        ‹
+      </button>
+      <div id="eventos-dots" class="flex justify-center gap-2" role="tablist" aria-label="Eventos"></div>
+      <button
+        type="button"
+        id="eventos-next"
+        aria-label="Evento siguiente"
+        class="hidden h-10 w-10 items-center justify-center rounded-full border border-dorado/50 text-lg text-dorado transition hover:bg-dorado hover:text-negro disabled:pointer-events-none disabled:opacity-30 md:flex"
+      >
+        ›
+      </button>
+    </div>
+  </div>
 
   <div id="eventos-vacio" class="card mx-auto max-w-xl px-6 py-10 md:px-12">
     <p class="mb-6 text-[17px] leading-relaxed text-body-text">
@@ -23,28 +47,31 @@ import SectionHeader from "./SectionHeader.astro";
 
 <script>
   import { supabase, formatFecha, COLUMNAS_PUBLICAS, type EventoPublico } from "../lib/supabase";
+  import { initMuCarousel } from "../utils/muCarousel";
 
   const lista = document.getElementById("eventos-lista")!;
+  const carrusel = document.getElementById("eventos-carrusel")!;
   const vacio = document.getElementById("eventos-vacio")!;
 
   // Publico: solo fecha, lugar y banner. Horarios, mapa y notas son solo para musicos.
   function card(e: EventoPublico) {
     const f = formatFecha(e.fecha);
     const li = document.createElement("li");
-    li.className = "card w-full max-w-sm overflow-hidden sm:w-[calc(50%-0.75rem)]";
+    li.className = "card overflow-hidden";
 
     if (e.banner_url) {
       const img = document.createElement("img");
       img.src = e.banner_url;
       img.alt = `Los Eternos en ${e.lugar}, ${f.larga}`;
       img.loading = "lazy";
-      img.className = "block aspect-square w-full object-cover";
+      img.className = "block h-full w-full object-cover";
+      img.draggable = false;
       li.append(img);
       return li;
     }
 
     const row = document.createElement("div");
-    row.className = "flex items-center gap-5 p-4 md:p-5";
+    row.className = "flex h-full w-[var(--mu-l,20rem)] items-center gap-5 p-4 md:p-5";
     const fecha = document.createElement("div");
     fecha.className = "flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-md bg-gradient-to-b from-dorado-claro via-dorado to-dorado-oscuro text-negro";
     fecha.innerHTML = `<span class="text-3xl font-extrabold leading-none"></span><span class="text-xs font-bold tracking-widest"></span>`;
@@ -75,9 +102,16 @@ import SectionHeader from "./SectionHeader.astro";
     // Ante cualquier error o sin eventos se queda el mensaje por defecto.
     if (error || !data?.length) return;
     lista.replaceChildren(...data.map(card));
-    lista.classList.remove("hidden");
-    lista.classList.add("flex");
+    carrusel.classList.remove("hidden");
     vacio.classList.add("hidden");
+    // Se inicia ya visible, para que midan bien las tarjetas.
+    initMuCarousel(lista, {
+      style: "poster",
+      ratio: 1,
+      dots: document.getElementById("eventos-dots"),
+      prev: document.getElementById("eventos-prev") as HTMLButtonElement,
+      next: document.getElementById("eventos-next") as HTMLButtonElement,
+    });
   }
 
   cargar();
