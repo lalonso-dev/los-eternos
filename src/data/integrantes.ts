@@ -30,7 +30,10 @@ export const integrantes: Integrante[] = [
     apellido: "", // TODO: falta el apellido
     rol: "Cantante",
     descripcion: "",
-    redes: {},
+    redes: {
+      instagram: "https://www.instagram.com/marcoantoniovillamondragon/",
+      facebook: "https://www.facebook.com/marcoantonio.villamondragon",
+    },
   },
   {
     slug: "mario-carranza",
@@ -38,7 +41,10 @@ export const integrantes: Integrante[] = [
     apellido: "Carranza",
     rol: "Bajo quinto",
     descripcion: "",
-    redes: {},
+    redes: {
+      instagram: "https://www.instagram.com/mario.carranza_diaz/",
+      facebook: "https://www.facebook.com/carranzadiaz",
+    },
   },
   {
     slug: "luiz-albarez",
@@ -46,7 +52,10 @@ export const integrantes: Integrante[] = [
     apellido: "Albarez",
     rol: "Acordeón",
     descripcion: "",
-    redes: {},
+    redes: {
+      instagram: "https://www.instagram.com/luis_cambray/",
+      facebook: "https://www.facebook.com/luis.angel.5223722",
+    },
   },
   {
     slug: "lucas-alberto",
@@ -54,7 +63,10 @@ export const integrantes: Integrante[] = [
     apellido: "Alberto",
     rol: "Bajo eléctrico",
     descripcion: "",
-    redes: {},
+    redes: {
+      instagram: "https://www.instagram.com/alberthoalonso/",
+      facebook: "https://www.facebook.com/bralberto",
+    },
   },
   {
     slug: "edgar-guzman",
@@ -62,7 +74,22 @@ export const integrantes: Integrante[] = [
     apellido: "Guzman",
     rol: "Batería",
     descripcion: "",
-    redes: {},
+    redes: {
+      instagram: "https://www.instagram.com/edg.ar2707/",
+      facebook: "https://www.facebook.com/patho.guzman.71",
+    },
+  },
+  {
+    // Foto: src/assets/team-photos/jorge-roque.webp (mientras no exista, se muestra el monograma "JR")
+    slug: "jorge-roque",
+    nombre: "Jorge",
+    apellido: "Roque",
+    rol: "Audio e iluminación", // alternativas: "Producción y sonido", "Director técnico"
+    descripcion: "",
+    redes: {
+      instagram: "https://www.instagram.com/jorg3.roque/",
+      facebook: "https://www.facebook.com/jorge.roque.9803",
+    },
   },
 ];
 
