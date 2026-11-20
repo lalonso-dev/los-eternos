@@ -7,6 +7,14 @@
 interface MuOptions {
   /** alto / ancho de la tarjeta grande (1 = cuadrada, 1.25 = vertical 4:5) */
   ratio?: number;
+  /** ancho máximo (px) de la tarjeta activa en escritorio (por defecto 500) */
+  maxLarge?: number;
+  /** ancho de la mediana y la chica como fracción de la grande en escritorio (por defecto [0.6, 0.3]) */
+  sideScale?: [number, number];
+  /** alto en px [activa, demás] en escritorio; si se da, reemplaza a ratio (la activa es más alta que las otras) */
+  heights?: [number, number];
+  /** igual que heights pero en móvil, como proporción del ancho de la tarjeta grande (ej. [1.33, 1.13]) */
+  heightsMobile?: [number, number];
   /** igual que ratio, pero solo en móvil (si no se da, usa ratio) */
   ratioMobile?: number;
   dots?: HTMLElement | null;
@@ -58,8 +66,11 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
       const M = 30;
       return [usable - GAP - M, M, 0];
     }
-    const L = Math.min(Math.round(W * 0.48), 500);
-    return [L, Math.round(L * 0.6), Math.round(L * 0.3)];
+    const [m, s] = opts.sideScale ?? [0.6, 0.3];
+    // Con sideScale personalizado, la grande se calcula para que las tres siempre quepan.
+    const fit = opts.sideScale ? Math.round((W - 2 * GAP) / (1 + m + s)) : Math.round(W * 0.48);
+    const L = Math.min(fit, opts.maxLarge ?? 500);
+    return [L, Math.round(L * m), Math.round(L * s)];
   }
 
   // Modo "cartelera": la activa al frente, grande; las vecinas asoman detrás a ambos lados,
@@ -101,7 +112,11 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
   function layoutMaterial(W: number, r: number) {
     const [L, M, S] = sizes(W);
     const slots = [L, M, S];
-    track.style.setProperty("--mu-h", `${Math.round(L * r)}px`);
+    // En móvil los altos son proporción del ancho de la grande; en escritorio, px fijos.
+    const hm = opts.heightsMobile;
+    const tall: [number, number] | undefined =
+      W >= 640 ? opts.heights : hm && [Math.round(L * hm[0]), Math.round(L * hm[1])];
+    track.style.setProperty("--mu-h", `${tall ? tall[0] : Math.round(L * r)}px`);
 
     const widths = items.map((_, i) => {
       const d = i - active;
@@ -112,6 +127,8 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
     items.forEach((item, i) => {
       item.style.width = `${widths[i]}px`;
       item.style.marginRight = widths[i] > 0 && i < lastVisible ? `${GAP}px` : "0px";
+      if (tall) item.style.height = `${i === active ? tall[0] : tall[1]}px`;
+      else item.style.removeProperty("height");
       item.style.opacity = widths[i] === 0 ? "0" : i === active ? "1" : i === active + 1 ? "0.85" : "0.65";
       item.style.setProperty("--mu-l", `${L}px`);
       item.inert = widths[i] === 0;

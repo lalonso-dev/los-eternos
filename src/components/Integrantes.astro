@@ -43,7 +43,7 @@ const miembros = integrantes.map((m) => {
   />
 
   <!-- Carrusel estilo Material You (utils/muCarousel.ts) -->
-  <div class="mx-auto max-w-[1100px]">
+  <div class="mx-auto max-w-[1360px]">
     <ul id="integrantes-track" aria-label="Integrantes">
       {miembros.map((m) => (
         <li class="card bg-carbon">
@@ -162,6 +162,10 @@ const miembros = integrantes.map((m) => {
     initMuCarousel(track, {
       ratio: 1.05,
       ratioMobile: 1,
+      maxLarge: 600,
+      sideScale: [0.75, 0.4],
+      heights: [600, 520],
+      heightsMobile: [1.33, 1.13],
       dots: document.getElementById("integrantes-dots"),
       prev: document.getElementById("integrantes-prev") as HTMLButtonElement,
       next: document.getElementById("integrantes-next") as HTMLButtonElement,
