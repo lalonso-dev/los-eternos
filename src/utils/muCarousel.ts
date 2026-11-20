@@ -12,6 +12,8 @@ interface MuOptions {
   dots?: HTMLElement | null;
   prev?: HTMLButtonElement | null;
   next?: HTMLButtonElement | null;
+  /** "material" (por defecto): tarjetas de distinto ancho en fila. "poster": carteleras apiladas al frente. */
+  style?: "material" | "poster";
   /** si se da, el carrusel solo funciona mientras se cumpla (ej. solo en móvil) */
   mq?: string;
   /** se llama con el índice de la tarjeta activa cada vez que cambia (y al iniciar) */
@@ -60,12 +62,45 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
     return [L, Math.round(L * 0.6), Math.round(L * 0.3)];
   }
 
-  function layout() {
-    if (!enabled) return;
-    const W = track.clientWidth;
+  // Modo "cartelera": la activa al frente, grande; las vecinas asoman detrás a ambos lados,
+  // más chicas, atenuadas y desenfocadas (como el Posters Slider / coverflow).
+  function layoutPoster(W: number, r: number) {
+    const mobile = W < 640;
+    const L = mobile ? Math.round(W * 0.82) : Math.min(Math.round(W * 0.56), 560);
+    track.style.setProperty("--mu-h", `${Math.round(L * r)}px`);
+
+    const side = (W - L) / 2; // espacio a cada lado de la cartelera central
+    const peek1 = side * 0.72;
+    const peek2 = side * 0.26;
+    const scale = [1, 0.84, 0.7];
+    const opacity = [1, 0.8, 0.5];
+    const filter = ["none", "blur(1.5px) brightness(0.75)", "blur(3px) brightness(0.55)"];
+
+    items.forEach((item, i) => {
+      const d = i - active;
+      const a = Math.abs(d);
+      const k = Math.min(a, 2);
+      const sign = Math.sign(d);
+      let x = 0;
+      if (k === 1) x = sign * (L / 2 + peek1 - (L * scale[1]) / 2);
+      if (k === 2) x = sign * (L / 2 + peek1 + peek2 - (L * scale[2]) / 2);
+      const hidden = a > 2;
+
+      item.style.width = `${L}px`;
+      item.style.transform = `translateX(calc(-50% + ${x}px)) scale(${hidden ? 0.6 : scale[k]})`;
+      item.style.opacity = hidden ? "0" : String(opacity[k]);
+      item.style.filter = hidden ? "none" : filter[k];
+      item.style.zIndex = String(10 - a);
+      item.style.pointerEvents = hidden ? "none" : "";
+      item.style.setProperty("--mu-l", `${L}px`);
+      item.inert = hidden;
+      item.dataset.muActive = String(i === active);
+    });
+  }
+
+  function layoutMaterial(W: number, r: number) {
     const [L, M, S] = sizes(W);
     const slots = [L, M, S];
-    const r = W < 640 ? (opts.ratioMobile ?? ratio) : ratio;
     track.style.setProperty("--mu-h", `${Math.round(L * r)}px`);
 
     const widths = items.map((_, i) => {
@@ -81,8 +116,19 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
       item.style.setProperty("--mu-l", `${L}px`);
       item.inert = widths[i] === 0;
       item.dataset.muActive = String(i === active);
-      // Las tarjetas plegadas miden 0 px y el navegador no baja sus imágenes "lazy":
-      // se precargan las que están por entrar para que no aparezcan en blanco.
+    });
+  }
+
+  function layout() {
+    if (!enabled) return;
+    const W = track.clientWidth;
+    const r = W < 640 ? (opts.ratioMobile ?? ratio) : ratio;
+    if (opts.style === "poster") layoutPoster(W, r);
+    else layoutMaterial(W, r);
+
+    // Las tarjetas plegadas o escondidas no se ven y el navegador no baja sus imágenes "lazy":
+    // se precargan las que están por entrar para que no aparezcan en blanco.
+    items.forEach((item, i) => {
       if (i >= active - 1 && i <= active + 4) {
         item.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => (img.loading = "eager"));
       }
@@ -104,7 +150,7 @@ export function initMuCarousel(track: HTMLElement, opts: MuOptions = {}) {
 
   function apply() {
     enabled = !mql || mql.matches;
-    track.classList.toggle("mu-on", enabled);
+    track.classList.toggle(opts.style === "poster" ? "poster-on" : "mu-on", enabled);
     if (enabled) {
       layout();
     } else {

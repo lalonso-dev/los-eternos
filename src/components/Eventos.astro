@@ -2,7 +2,7 @@
 import SectionHeader from "./SectionHeader.astro";
 ---
 
-<section id="eventos" class="band scroll-mt-24 px-6 py-24 text-center md:px-20 md:py-36">
+<section id="eventos" class="band scroll-mt-24 overflow-x-clip px-6 py-24 text-center md:px-20 md:py-36">
   <SectionHeader eyebrow="Agenda" title="Próximos Eventos" class="mb-12" />
 
   <!-- Carrusel: se desliza con el dedo; en escritorio también con las flechas -->
@@ -106,6 +106,7 @@ import SectionHeader from "./SectionHeader.astro";
     vacio.classList.add("hidden");
     // Se inicia ya visible, para que midan bien las tarjetas.
     initMuCarousel(lista, {
+      style: "poster",
       ratio: 1,
       dots: document.getElementById("eventos-dots"),
       prev: document.getElementById("eventos-prev") as HTMLButtonElement,

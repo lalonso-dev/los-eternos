@@ -246,6 +246,55 @@ a.icon-ring:hover {
   }
 }
 
+/* Carrusel de carteleras (utils/muCarousel.ts, style: "poster"): la activa al frente, grande;
+   las vecinas asoman detrás. El JS fija ancho, transform, opacidad, filtro y --mu-h. */
+.poster-on {
+  position: relative;
+  height: var(--mu-h);
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: height 0.4s ease;
+}
+@media (max-width: 767px) {
+  .poster-on {
+    margin-inline: -1.5rem;
+  }
+}
+.poster-on > * {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: var(--mu-h);
+  aspect-ratio: auto !important;
+  overflow: hidden;
+  border: 0;
+  border-radius: 1.25rem;
+  box-shadow: 0 30px 60px -25px rgb(0 0 0 / 0.9);
+  will-change: transform;
+  transition:
+    transform 0.6s cubic-bezier(0.3, 0, 0, 1),
+    opacity 0.5s ease,
+    filter 0.5s ease;
+}
+.poster-on > *::before {
+  display: none;
+}
+.poster-on > [data-mu-active="false"] {
+  cursor: pointer;
+}
+.poster-on img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster-on,
+  .poster-on > * {
+    transition: none;
+  }
+}
+
 /* Puntos indicadores de los carruseles */
 .reel-dot {
   height: 8px;
