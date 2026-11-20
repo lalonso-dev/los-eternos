@@ -53,7 +53,7 @@ export const integrantes: Integrante[] = [
     rol: "Acordeón",
     descripcion: "",
     redes: {
-      instagram: "https://www.instagram.com/luis_cambray/",
+      instagram: "https://www.instagram.com/luis_drumms_/",
       facebook: "https://www.facebook.com/luis.angel.5223722",
     },
   },
