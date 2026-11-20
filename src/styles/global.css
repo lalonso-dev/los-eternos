@@ -229,6 +229,7 @@ a.icon-ring:hover {
   border-radius: 1.5rem;
   transition:
     width 0.5s cubic-bezier(0.3, 0, 0, 1),
+    height 0.5s cubic-bezier(0.3, 0, 0, 1),
     margin 0.5s cubic-bezier(0.3, 0, 0, 1),
     opacity 0.4s ease;
 }
