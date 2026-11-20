@@ -1,0 +1,171 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import SectionHeader from "./SectionHeader.astro";
+import { integrantes, nombreCorto } from "../data/integrantes";
+
+// Las fotos se detectan por nombre de archivo: src/assets/team-photos/<slug>.webp|jpg|png
+const fotoModules = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/team-photos/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true }
+);
+const fotos = new Map(
+  Object.entries(fotoModules).map(([path, mod]) => [
+    path.split("/").pop()!.replace(/\.[^.]+$/, ""),
+    mod.default,
+  ])
+);
+
+const redesInfo = [
+  { key: "instagram", label: "Instagram", color: "#E4405F" },
+  { key: "facebook", label: "Facebook", color: "#1877F2" },
+  { key: "tiktok", label: "TikTok", color: "#00F2EA" },
+] as const;
+
+const miembros = integrantes.map((m) => {
+  const nombre = nombreCorto(m);
+  const iniciales = [m.nombre, m.apellido]
+    .filter(Boolean)
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const redes = redesInfo.filter((r) => m.redes[r.key]).map((r) => ({ ...r, href: m.redes[r.key]! }));
+  return { ...m, nombre, iniciales, redes, foto: fotos.get(m.slug) };
+});
+---
+
+<section id="integrantes" class="band scroll-mt-24 overflow-hidden px-6 py-24 text-center md:px-10 md:py-36">
+  <SectionHeader
+    eyebrow="El grupo"
+    title="Conoce a los Integrantes"
+    subtitle="Los músicos detrás del sonido norteño de Los Eternos"
+  />
+
+  <!-- Carrusel estilo Material You (utils/muCarousel.ts) -->
+  <div class="mx-auto max-w-[1100px]">
+    <ul id="integrantes-track" aria-label="Integrantes">
+      {miembros.map((m) => (
+        <li class="card bg-carbon">
+          {m.foto ? (
+            <Image
+              src={m.foto}
+              alt={`${m.nombre}, ${m.rol.toLowerCase()} de Los Eternos`}
+              width={720}
+              height={792}
+              loading="lazy"
+              draggable="false"
+              class="h-full w-full object-cover"
+            />
+          ) : (
+            <div
+              class="flex h-full w-full items-center justify-center"
+              style="background: radial-gradient(70% 60% at 50% 35%, rgb(201 162 77 / 0.16), transparent 75%), linear-gradient(160deg, var(--color-acero), var(--color-carbon));"
+              aria-hidden="true"
+            >
+              <span class="text-oro font-display text-6xl font-bold tracking-wider">{m.iniciales}</span>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Flechas y puntos -->
+  <div class="mt-5 flex items-center justify-center gap-5">
+    <button
+      type="button"
+      id="integrantes-prev"
+      aria-label="Integrante anterior"
+      class="hidden h-10 w-10 items-center justify-center rounded-full border border-dorado/50 text-lg text-dorado transition hover:bg-dorado hover:text-negro disabled:pointer-events-none disabled:opacity-30 md:flex"
+    >
+      ‹
+    </button>
+    <div id="integrantes-dots" class="flex justify-center gap-2" role="tablist" aria-label="Integrantes"></div>
+    <button
+      type="button"
+      id="integrantes-next"
+      aria-label="Integrante siguiente"
+      class="hidden h-10 w-10 items-center justify-center rounded-full border border-dorado/50 text-lg text-dorado transition hover:bg-dorado hover:text-negro disabled:pointer-events-none disabled:opacity-30 md:flex"
+    >
+      ›
+    </button>
+  </div>
+
+  <!-- Datos del integrante activo (todos están en el HTML; solo se muestra uno) -->
+  <div id="integrante-info" class="mx-auto mt-8 max-w-xl" aria-live="polite">
+    {miembros.map((m, i) => (
+      <article data-info={i} hidden={i !== 0} class="integrante-info">
+        <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-dorado">{m.rol}</p>
+        <h3 class="mt-1 font-display text-2xl font-bold leading-tight text-cream md:text-3xl">{m.nombre}</h3>
+        {m.descripcion && (
+          <p class="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-body-text">{m.descripcion}</p>
+        )}
+        {m.redes.length > 0 && (
+          <div class="mt-4 flex justify-center gap-3">
+            {m.redes.map((r) => (
+              <a
+                href={r.href}
+                target="_blank"
+                rel="noreferrer me"
+                aria-label={`${r.label} de ${m.nombre}`}
+                class="icon-ring h-10 w-10"
+                style={`--brand: ${r.color}`}
+              >
+                <Icon name={r.key} class="h-4 w-4" />
+              </a>
+            ))}
+          </div>
+        )}
+      </article>
+    ))}
+  </div>
+</section>
+
+<style is:global>
+  /* Tarjeta activa: foto centrada. Tarjetas angostas: se prioriza el lado derecho,
+     donde suele estar el músico en las fotos. */
+  #integrantes-track img {
+    object-position: 68% 40%;
+    transition: object-position 0.5s cubic-bezier(0.3, 0, 0, 1);
+  }
+  #integrantes-track [data-mu-active="true"] img {
+    object-position: 50% 40%;
+  }
+  .integrante-info:not([hidden]) {
+    animation: info-in 0.45s ease both;
+  }
+  @keyframes info-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .integrante-info:not([hidden]) {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { initMuCarousel } from "../utils/muCarousel";
+
+  const track = document.getElementById("integrantes-track");
+  const infos = Array.from(document.querySelectorAll<HTMLElement>("#integrante-info [data-info]"));
+
+  if (track) {
+    initMuCarousel(track, {
+      ratio: 1.05,
+      ratioMobile: 1,
+      dots: document.getElementById("integrantes-dots"),
+      prev: document.getElementById("integrantes-prev") as HTMLButtonElement,
+      next: document.getElementById("integrantes-next") as HTMLButtonElement,
+      onChange: (i) => infos.forEach((el, n) => (el.hidden = n !== i)),
+    });
+  }
+</script>

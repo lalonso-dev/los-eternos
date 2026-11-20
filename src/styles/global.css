@@ -200,6 +200,67 @@ a.icon-ring:hover {
   transform: translateY(-2px);
 }
 
+/* Carrusel estilo Material You (ver utils/muCarousel.ts): tarjetas de igual altura,
+   la activa grande y las siguientes más angostas. El JS fija ancho, margen y --mu-h. */
+.mu-on {
+  display: flex !important;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0 !important;
+  overflow: hidden;
+  height: var(--mu-h);
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: height 0.4s ease;
+}
+/* En móvil el carrusel ocupa todo el ancho de la pantalla (las secciones tienen 1.5rem de margen) */
+@media (max-width: 767px) {
+  .mu-on {
+    margin-inline: -1.5rem;
+  }
+}
+.mu-on > * {
+  flex: none;
+  height: var(--mu-h);
+  aspect-ratio: auto !important;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  transition:
+    width 0.5s cubic-bezier(0.3, 0, 0, 1),
+    margin 0.5s cubic-bezier(0.3, 0, 0, 1),
+    opacity 0.4s ease;
+}
+.mu-on > [data-mu-active="false"] {
+  cursor: pointer;
+}
+.mu-on img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mu-on,
+  .mu-on > * {
+    transition: none;
+  }
+}
+
+/* Puntos indicadores de los carruseles */
+.reel-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 9999px;
+  background: rgb(201 162 77 / 0.3);
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+.reel-dot[aria-selected="true"] {
+  width: 24px;
+  background: var(--color-dorado);
+}
+
 /* Texto con degradado dorado metálico */
 .text-oro {
   background: linear-gradient(
