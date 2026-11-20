@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Página no encontrada | Los Eternos" description="La página que buscas no existe." noindex>
+  <main class="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+    <p class="eyebrow">Error 404</p>
+    <h1 class="section-title">Esta página no existe</h1>
+    <div class="orn" aria-hidden="true"><span></span><i></i><span></span></div>
+    <p class="mb-8 max-w-md text-body-text">
+      Puede que el enlace esté mal escrito o que la página ya no esté disponible.
+    </p>
+    <a href="/" class="btn-gold">Volver al inicio</a>
+  </main>
+</BaseLayout>
